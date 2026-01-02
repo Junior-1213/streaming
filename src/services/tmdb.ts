@@ -84,5 +84,24 @@ export const tmdbService = {
 
   getBackdropUrl(path: string) {
     return path ? `${BACKDROP_BASE_URL}${path}` : 'https://images.pexels.com/photos/4064826/pexels-photo-4064826.jpeg';
+  },
+
+  async searchMulti(query: string): Promise<any[]> {
+    if (!query.trim()) return [];
+    const response = await fetch(
+      `${BASE_URL}/search/multi?api_key=${TMDB_API_KEY}&query=${encodeURIComponent(query)}&include_adult=false`
+    );
+    const data = await response.json();
+    return data.results.filter((item: any) =>
+      (item.media_type === 'movie' || item.media_type === 'tv') && item.poster_path
+    );
+  },
+
+  async fetchRecommendations(type: 'movie' | 'tv', id: string): Promise<any[]> {
+    const response = await fetch(
+      `${BASE_URL}/${type}/${id}/recommendations?api_key=${TMDB_API_KEY}`
+    );
+    const data = await response.json();
+    return data.results.map((m: any) => ({ ...m, media_type: type }));
   }
 };
