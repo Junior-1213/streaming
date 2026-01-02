@@ -46,13 +46,13 @@ export const Search: React.FC = () => {
       <form onSubmit={handleSearch} className="mb-12">
         <div className="flex gap-3 max-w-2xl">
           <div className="flex-1 relative">
-            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-textSecondary" size={20} />
+            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black" size={20} />
             <input
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Search movies and TV shows..."
-              className="w-full pl-12 pr-4 py-3 bg-surface border border-border rounded-lg focus:outline-none focus:border-primary text-white placeholder:text-textSecondary transition-colors"
+              className="w-full pl-12 pr-4 py-3 bg-surface border border-border rounded-lg focus:outline-none focus:border-primary text-black placeholder:text-textSecondary transition-colors"
             />
           </div>
           <button
