@@ -7,19 +7,21 @@ import { Movies } from './pages/Movies';
 import { TVShows } from './pages/TVShows';
 import { MyList } from './pages/MyList';
 import { MediaDetail } from './pages/MediaDetail';
+import { Search } from './pages/Search';
 
 function App() {
   return (
     <Router>
       <div className="min-h-screen bg-[#171717] text-white font-sans selection:bg-primary/30">
         <Navbar />
-        
+
         <main>
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/movies" element={<Movies />} />
             <Route path="/tv-shows" element={<TVShows />} />
             <Route path="/my-list" element={<MyList />} />
+            <Route path="/search" element={<Search />} />
             <Route path="/title/:type/:id" element={<MediaDetail />} />
           </Routes>
         </main>

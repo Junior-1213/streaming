@@ -6,22 +6,28 @@ import { useStore } from '../store/useStore';
 import { UnifiedMedia, TMDBMedia } from '../types/tmdb';
 
 interface MediaGridProps {
-  items: TMDBMedia[];
+  items: TMDBMedia[] | UnifiedMedia[];
 }
 
 export const MediaGrid: React.FC<MediaGridProps> = ({ items }) => {
   const { setSelectedMedia, myList, addToMyList, removeFromMyList } = useStore();
 
-  const formatMedia = (item: TMDBMedia): UnifiedMedia => ({
-    id: item.id.toString(),
-    title: item.title || item.name || 'Untitled',
-    description: item.overview,
-    posterUrl: tmdbService.getImageUrl(item.poster_path),
-    backdropUrl: tmdbService.getBackdropUrl(item.backdrop_path),
-    rating: item.vote_average?.toFixed(1) || '0.0',
-    year: (item.release_date || item.first_air_date || '').split('-')[0] || 'N/A',
-    type: item.media_type || (item.title ? 'movie' : 'tv')
-  });
+  const formatMedia = (item: TMDBMedia | UnifiedMedia): UnifiedMedia => {
+    if ('posterUrl' in item) {
+      return item as UnifiedMedia;
+    }
+    const tmdbItem = item as TMDBMedia;
+    return {
+      id: tmdbItem.id.toString(),
+      title: tmdbItem.title || tmdbItem.name || 'Untitled',
+      description: tmdbItem.overview,
+      posterUrl: tmdbService.getImageUrl(tmdbItem.poster_path),
+      backdropUrl: tmdbService.getBackdropUrl(tmdbItem.backdrop_path),
+      rating: tmdbItem.vote_average?.toFixed(1) || '0.0',
+      year: (tmdbItem.release_date || tmdbItem.first_air_date || '').split('-')[0] || 'N/A',
+      type: tmdbItem.media_type || (tmdbItem.title ? 'movie' : 'tv')
+    };
+  };
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
