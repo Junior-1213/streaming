@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Play, Plus, Check, Star, Clock, Calendar, ChevronLeft, Info } from 'lucide-react';
+import { Play, Plus, Check, Star, ChevronLeft, Info } from 'lucide-react';
 import { tmdbService } from '../services/tmdb';
 import { useStore } from '../store/useStore';
 import { UnifiedMedia } from '../types/tmdb';
@@ -112,7 +112,10 @@ export const MediaDetail: React.FC = () => {
           </p>
 
           <div className="flex items-center gap-4 mt-4">
-            <button className="flex items-center gap-3 px-10 py-4 bg-white text-black rounded-lg font-bold text-lg hover:bg-white/90 transition-all transform hover:scale-105">
+            <button 
+              onClick={() => navigate(`/watch/${type}/${id}`)}
+              className="flex items-center gap-3 px-10 py-4 bg-white text-black rounded-lg font-bold text-lg hover:bg-white/90 transition-all transform hover:scale-105"
+            >
               <Play fill="currentColor" size={24} />
               Play Now
             </button>

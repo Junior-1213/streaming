@@ -20,6 +20,11 @@ export const MediaCard: React.FC<MediaCardProps> = ({ media, showRanking = false
     navigate(`/title/${media.type}/${media.id}`);
   };
 
+  const handlePlayClick = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    navigate(`/watch/${media.type}/${media.id}`);
+  };
+
   const handleOpenModal = (e: React.MouseEvent) => {
     e.stopPropagation(); 
     setSelectedMedia(media);
@@ -80,9 +85,7 @@ export const MediaCard: React.FC<MediaCardProps> = ({ media, showRanking = false
             <div className="flex gap-2">
               <button 
                 className="w-9 h-9 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors shadow-lg"
-                onClick={(e) => {
-                  e.stopPropagation();
-                }}
+                onClick={handlePlayClick}
               >
                 <Play size={16} fill="currentColor" />
               </button>

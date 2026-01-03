@@ -16,8 +16,9 @@ export const Navbar: React.FC = () => {
 
   const navLinks = [
     { name: 'Home', path: '/' },
-    { name: 'TV Shows', path: '/tv-shows' },
     { name: 'Movies', path: '/movies' },
+    { name: 'TV Shows', path: '/tv-shows' },
+    { name: 'Animes', path: '/animes' },
     { name: 'My List', path: '/my-list' },
   ];
 

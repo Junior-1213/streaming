@@ -1,4 +1,4 @@
-const TMDB_API_KEY = '619a49df03516a5cb88a02129e33715c';
+const TMDB_API_KEY = import.meta.env.VITE_TMDB_API_KEY;
 const BASE_URL = 'https://api.themoviedb.org/3';
 const IMAGE_BASE_URL = 'https://image.tmdb.org/t/p/w500';
 const BACKDROP_BASE_URL = 'https://image.tmdb.org/t/p/original';
@@ -17,48 +17,89 @@ export const GENRES = {
   THRILLER: 53
 };
 
+export interface FilterOptions {
+  genres?: number[];
+  sortBy?: 'popularity.desc' | 'popularity.asc' | 'vote_average.desc' | 'vote_average.asc' | 'release_date.desc' | 'release_date.asc';
+}
+
 export const tmdbService = {
-  async fetchTrending(): Promise<any[]> {
-    const response = await fetch(`${BASE_URL}/trending/all/day?api_key=${TMDB_API_KEY}`);
+  async fetchTrending(page: number = 1): Promise<any[]> {
+    const response = await fetch(`${BASE_URL}/trending/all/day?api_key=${TMDB_API_KEY}&page=${page}`);
     const data = await response.json();
     return data.results;
   },
 
-  async fetchPopularMovies(): Promise<any[]> {
-    const response = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}`);
+  async fetchPopularMovies(page: number = 1): Promise<any[]> {
+    const response = await fetch(`${BASE_URL}/movie/popular?api_key=${TMDB_API_KEY}&page=${page}`);
     const data = await response.json();
     return data.results.map((m: any) => ({ ...m, media_type: 'movie' }));
   },
 
-  async fetchPopularTV(): Promise<any[]> {
-    const response = await fetch(`${BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}`);
+  async fetchPopularTV(page: number = 1): Promise<any[]> {
+    const response = await fetch(`${BASE_URL}/tv/popular?api_key=${TMDB_API_KEY}&page=${page}`);
     const data = await response.json();
     return data.results.map((m: any) => ({ ...m, media_type: 'tv' }));
   },
 
-  async fetchTopRatedMovies(): Promise<any[]> {
-    const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}`);
+  async fetchTopRatedMovies(page: number = 1): Promise<any[]> {
+    const response = await fetch(`${BASE_URL}/movie/top_rated?api_key=${TMDB_API_KEY}&page=${page}`);
     const data = await response.json();
     return data.results.map((m: any) => ({ ...m, media_type: 'movie' }));
   },
 
-  async fetchTopRatedTV(): Promise<any[]> {
-    const response = await fetch(`${BASE_URL}/tv/top_rated?api_key=${TMDB_API_KEY}`);
+  async fetchTopRatedTV(page: number = 1): Promise<any[]> {
+    const response = await fetch(`${BASE_URL}/tv/top_rated?api_key=${TMDB_API_KEY}&page=${page}`);
     const data = await response.json();
     return data.results.map((m: any) => ({ ...m, media_type: 'tv' }));
   },
 
-  async fetchMoviesByGenre(genreId: number): Promise<any[]> {
+  async fetchMoviesByGenre(genreId: number, page: number = 1): Promise<any[]> {
     const response = await fetch(
-      `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&sort_by=popularity.desc`
+      `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${genreId}&sort_by=popularity.desc&page=${page}`
     );
     const data = await response.json();
     return data.results.map((m: any) => ({ ...m, media_type: 'movie' }));
   },
 
-  async fetchTVByGenre(genreId: number): Promise<any[]> {
+  async fetchTVByGenre(genreId: number, page: number = 1): Promise<any[]> {
     const response = await fetch(
-      `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=${genreId}&sort_by=popularity.desc`
+      `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&with_genres=${genreId}&sort_by=popularity.desc&page=${page}`
+    );
+    const data = await response.json();
+    return data.results.map((m: any) => ({ ...m, media_type: 'tv' }));
+  },
+
+  async fetchMoviesWithFilters(page: number = 1, filters: FilterOptions = {}): Promise<any[]> {
+    const genresParam = filters.genres?.length ? `&with_genres=${filters.genres.join(',')}` : '';
+    const sortParam = filters.sortBy ? `&sort_by=${filters.sortBy}` : '&sort_by=popularity.desc';
+    
+    const response = await fetch(
+      `${BASE_URL}/discover/movie?api_key=${TMDB_API_KEY}&page=${page}${genresParam}${sortParam}`
+    );
+    const data = await response.json();
+    return data.results.map((m: any) => ({ ...m, media_type: 'movie' }));
+  },
+
+  async fetchTVWithFilters(page: number = 1, filters: FilterOptions = {}): Promise<any[]> {
+    const genresParam = filters.genres?.length ? `&with_genres=${filters.genres.join(',')}` : '';
+    const sortParam = filters.sortBy ? `&sort_by=${filters.sortBy}` : '&sort_by=popularity.desc';
+    
+    const response = await fetch(
+      `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&page=${page}${genresParam}${sortParam}`
+    );
+    const data = await response.json();
+    return data.results.map((m: any) => ({ ...m, media_type: 'tv' }));
+  },
+
+  async fetchAnime(page: number = 1, filters: FilterOptions = {}): Promise<any[]> {
+    // Fetch anime using Animation genre (16) for TV shows
+    const genresParam = filters.genres?.length 
+      ? `&with_genres=${[GENRES.ANIMATION, ...filters.genres].join(',')}` 
+      : `&with_genres=${GENRES.ANIMATION}`;
+    const sortParam = filters.sortBy ? `&sort_by=${filters.sortBy}` : '&sort_by=popularity.desc';
+    
+    const response = await fetch(
+      `${BASE_URL}/discover/tv?api_key=${TMDB_API_KEY}&page=${page}${genresParam}${sortParam}&with_original_language=ja`
     );
     const data = await response.json();
     return data.results.map((m: any) => ({ ...m, media_type: 'tv' }));
@@ -76,6 +117,18 @@ export const tmdbService = {
       cast: credits.cast?.slice(0, 6) || [],
       trailer: videos.results?.find((v: any) => v.type === 'Trailer' && v.site === 'YouTube') || videos.results?.[0]
     };
+  },
+
+  async getMovieGenres(): Promise<any[]> {
+    const response = await fetch(`${BASE_URL}/genre/movie/list?api_key=${TMDB_API_KEY}`);
+    const data = await response.json();
+    return data.genres;
+  },
+
+  async getTVGenres(): Promise<any[]> {
+    const response = await fetch(`${BASE_URL}/genre/tv/list?api_key=${TMDB_API_KEY}`);
+    const data = await response.json();
+    return data.genres;
   },
 
   getImageUrl(path: string) {
@@ -105,3 +158,4 @@ export const tmdbService = {
     return data.results.map((m: any) => ({ ...m, media_type: type }));
   }
 };
+

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Loader, Search as SearchIcon } from 'lucide-react';
@@ -11,6 +11,12 @@ export const Search: React.FC = () => {
   const [query, setQuery] = useState(searchParams.get('q') || '');
   const [results, setResults] = useState<TMDBMedia[]>([]);
   const [loading, setLoading] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Auto-focus input on mount
+  useEffect(() => {
+    inputRef.current?.focus();
+  }, []);
 
   useEffect(() => {
     const q = searchParams.get('q') || '';
@@ -46,12 +52,13 @@ export const Search: React.FC = () => {
       <form onSubmit={handleSearch} className="mb-12">
         <div className="flex gap-3 max-w-2xl">
           <div className="flex-1 relative">
-            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-black" size={20} />
+            <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" size={20} />
             <input
+              ref={inputRef}
               type="text"
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search movies and TV shows..."
+              placeholder="Search movies, TV shows, and anime..."
               className="w-full pl-12 pr-4 py-3 bg-surface border border-border rounded-lg focus:outline-none focus:border-primary text-black placeholder:text-textSecondary transition-colors"
             />
           </div>
@@ -67,7 +74,7 @@ export const Search: React.FC = () => {
       <div>
         <h2 className="text-2xl font-bold mb-8">
           {query.trim().length < 2
-            ? 'Start searching'
+            ? 'Start searching for your favorite content'
             : loading
             ? 'Searching...'
             : results.length > 0

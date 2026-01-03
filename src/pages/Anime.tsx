@@ -16,34 +16,27 @@ const SORT_OPTIONS = [
   { value: 'release_date.asc', label: 'Oldest First' },
 ];
 
-const MOVIE_GENRES = [
-  { id: 28, name: 'Action' },
-  { id: 12, name: 'Adventure' },
-  { id: 16, name: 'Animation' },
+const ANIME_GENRES = [
+  { id: 10759, name: 'Action & Adventure' },
   { id: 35, name: 'Comedy' },
-  { id: 80, name: 'Crime' },
-  { id: 99, name: 'Documentary' },
   { id: 18, name: 'Drama' },
   { id: 10751, name: 'Family' },
-  { id: 14, name: 'Fantasy' },
-  { id: 27, name: 'Horror' },
-  { id: 10749, name: 'Romance' },
-  { id: 878, name: 'Science Fiction' },
-  { id: 53, name: 'Thriller' },
+  { id: 10765, name: 'Sci-Fi & Fantasy' },
+  { id: 9648, name: 'Mystery' },
 ];
 
-export const Movies: React.FC = () => {
+export const Anime: React.FC = () => {
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [filters, setFilters] = useState<FilterOptions>({ genres: [], sortBy: 'popularity.desc' });
   const [tempFilters, setTempFilters] = useState<FilterOptions>({ genres: [], sortBy: 'popularity.desc' });
 
-  const fetchMovies = useCallback(
-    (page: number) => tmdbService.fetchMoviesWithFilters(page, filters),
+  const fetchAnime = useCallback(
+    (page: number) => tmdbService.fetchAnime(page, filters),
     [filters]
   );
 
-  const { items: movies, loading, hasMore } = useInfiniteScroll({
-    fetchFunction: fetchMovies,
+  const { items: anime, loading, hasMore } = useInfiniteScroll({
+    fetchFunction: fetchAnime,
     itemsPerPage: 20,
     filters
   });
@@ -74,11 +67,11 @@ export const Movies: React.FC = () => {
       <header className="mb-8">
         <div className="flex items-center justify-between mb-4">
           <div>
-            <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-2 uppercase">Movies</h1>
+            <h1 className="text-4xl md:text-5xl font-black tracking-tighter mb-2 uppercase">Anime</h1>
             <p className="text-textSecondary">
               {filters.genres.length > 0 || filters.sortBy !== 'popularity.desc'
                 ? 'Filtered results'
-                : 'Popular movies from around the world'}
+                : 'Popular anime series from Japan'}
             </p>
           </div>
           <button
@@ -130,7 +123,7 @@ export const Movies: React.FC = () => {
                   <div>
                     <label className="block text-sm font-bold text-primary mb-3">Genres</label>
                     <div className="grid grid-cols-2 gap-2 max-h-[200px] overflow-y-auto pr-2">
-                      {MOVIE_GENRES.map(genre => (
+                      {ANIME_GENRES.map(genre => (
                         <button
                           key={genre.id}
                           onClick={() => toggleGenre(genre.id)}
@@ -169,32 +162,32 @@ export const Movies: React.FC = () => {
       </header>
 
       <section>
-        {loading && movies.length === 0 ? (
+        {loading && anime.length === 0 ? (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
             {[...Array(12)].map((_, i) => <SkeletonCard key={i} />)}
           </div>
         ) : (
           <>
-            <MediaGrid items={movies} />
+            <MediaGrid items={anime} />
             
             {/* Loading more indicator */}
-            {loading && movies.length > 0 && (
+            {loading && anime.length > 0 && (
               <div className="flex items-center justify-center py-12">
                 <Loader className="animate-spin text-primary" size={40} />
               </div>
             )}
 
             {/* No more results */}
-            {!hasMore && movies.length > 0 && (
+            {!hasMore && anime.length > 0 && (
               <div className="text-center py-12 text-textSecondary">
-                <p>No more movies to load</p>
+                <p>No more anime to load</p>
               </div>
             )}
 
             {/* No results */}
-            {movies.length === 0 && !loading && (
+            {anime.length === 0 && !loading && (
               <div className="text-center py-20 text-textSecondary">
-                <p>No movies found with the selected filters</p>
+                <p>No anime found with the selected filters</p>
               </div>
             )}
           </>

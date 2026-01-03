@@ -1,4 +1,5 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Play, Plus, Check, ChevronDown, Star } from 'lucide-react';
 import { tmdbService } from '../services/tmdb';
@@ -10,6 +11,7 @@ interface MediaGridProps {
 }
 
 export const MediaGrid: React.FC<MediaGridProps> = ({ items }) => {
+  const navigate = useNavigate();
   const { setSelectedMedia, myList, addToMyList, removeFromMyList } = useStore();
 
   const formatMedia = (item: TMDBMedia | UnifiedMedia): UnifiedMedia => {
@@ -29,6 +31,20 @@ export const MediaGrid: React.FC<MediaGridProps> = ({ items }) => {
     };
   };
 
+  const handleMediaClick = (media: UnifiedMedia) => {
+    navigate(`/title/${media.type}/${media.id}`);
+  };
+
+  const handlePlayClick = (e: React.MouseEvent, media: UnifiedMedia) => {
+    e.stopPropagation();
+    navigate(`/watch/${media.type}/${media.id}`);
+  };
+
+  const handleOpenModal = (e: React.MouseEvent, media: UnifiedMedia) => {
+    e.stopPropagation();
+    setSelectedMedia(media);
+  };
+
   return (
     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-6">
       {items.map((item, index) => {
@@ -42,7 +58,7 @@ export const MediaGrid: React.FC<MediaGridProps> = ({ items }) => {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.3, delay: index * 0.03 }}
             className="group relative aspect-[2/3] rounded-lg overflow-hidden bg-surface cursor-pointer shadow-lg hover:shadow-primary/20 transition-all"
-            onClick={() => setSelectedMedia(media)}
+            onClick={() => handleMediaClick(media)}
           >
             <img
               src={media.posterUrl}
@@ -53,7 +69,10 @@ export const MediaGrid: React.FC<MediaGridProps> = ({ items }) => {
             
             <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-all duration-300 flex flex-col justify-end p-4">
               <div className="flex gap-2 mb-3 transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300">
-                <button className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors">
+                <button 
+                  onClick={(e) => handlePlayClick(e, media)}
+                  className="w-8 h-8 rounded-full bg-white text-black flex items-center justify-center hover:bg-primary hover:text-white transition-colors"
+                >
                   <Play size={16} fill="currentColor" />
                 </button>
                 <button 
@@ -65,7 +84,11 @@ export const MediaGrid: React.FC<MediaGridProps> = ({ items }) => {
                 >
                   {isInList ? <Check size={16} /> : <Plus size={16} />}
                 </button>
-                <button className="w-8 h-8 rounded-full border border-white/50 flex items-center justify-center text-white hover:border-white transition-colors ml-auto bg-black/40">
+                <button 
+                  onClick={(e) => handleOpenModal(e, media)}
+                  className="w-8 h-8 rounded-full border border-white/50 flex items-center justify-center text-white hover:border-white transition-colors ml-auto bg-black/40"
+                  title="More Info"
+                >
                   <ChevronDown size={16} />
                 </button>
               </div>
